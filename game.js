@@ -1,7 +1,7 @@
 "use strict";
 
 const PADDLE_HEIGHT = 100;
-const FPS = 30;
+const FPS = 60;
 
 let canvas;
 let canvasContext;
@@ -29,17 +29,29 @@ window.onload = function () {
 
     setInterval(function () { moveEverything(); drawEverything(); }, 1000 / FPS);
 
-    canvas.addEventListener("mousemove", function(event){
+    canvas.addEventListener("mousemove", function (event) {
         const mousePos = calcMousePos(event);
-        paddle1Y = mousePos.y;
+        paddle1Y = mousePos.y - (PADDLE_HEIGHT / 2);
     });
+}
+
+function ballReset() {
+    ballSpeedX = ballSpeedX * -1;
+    ballX = canvas.width / 2;
+    ballY = canvas.height / 2;
 }
 
 function moveEverything() {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
-    if (ballX > canvas.width || ballX < 0) {
+    if (ballX > canvas.width) {
         ballSpeedX = ballSpeedX * -1;
+    } else if (ballX < 0) {
+        if (ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT) {
+            ballSpeedX = ballSpeedX * -1;
+        } else {
+            ballReset();
+        }
     }
     if (ballY > canvas.height || ballY < 0) {
         ballSpeedY = ballSpeedY * -1;
