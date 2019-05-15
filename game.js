@@ -1,6 +1,10 @@
 "use strict";
 
+const CANVAS_COLOR = "black";
 const PADDLE_HEIGHT = 100;
+const PADDLE_WIDTH = 10;
+const PADDLE_COLOR = "white";
+const BALL_COLOR = "white";
 const FPS = 60;
 
 let canvas;
@@ -11,6 +15,10 @@ let ballSpeedX = 5;
 let ballSpeedY = 4;
 
 let paddle1Y = 250;
+let paddle2Y = 250;
+
+let player1Score = 0;
+let player2Score = 0;
 
 function calcMousePos(event) {
     const rect = canvas.getBoundingClientRect();
@@ -41,16 +49,34 @@ function ballReset() {
     ballY = canvas.height / 2;
 }
 
+function cpuMovement() {
+    const paddle2YCenter = paddle2Y + (PADDLE_HEIGHT / 2);
+    if (paddle2YCenter < ballY - 35) {
+        paddle2Y += 6;
+    } else if (paddle2YCenter > ballY + 35) {
+        paddle2Y -= 6;
+    }
+}
+
 function moveEverything() {
+    cpuMovement();
+
     ballX += ballSpeedX;
     ballY += ballSpeedY;
+
     if (ballX > canvas.width) {
-        ballSpeedX = ballSpeedX * -1;
+        if (ballY > paddle2Y && ballY < paddle2Y + PADDLE_HEIGHT) {
+            ballSpeedX = ballSpeedX * -1;
+        } else {
+            ballReset();
+            player1Score++;
+        }
     } else if (ballX < 0) {
         if (ballY > paddle1Y && ballY < paddle1Y + PADDLE_HEIGHT) {
             ballSpeedX = ballSpeedX * -1;
         } else {
             ballReset();
+            player2Score++;
         }
     }
     if (ballY > canvas.height || ballY < 0) {
@@ -59,9 +85,14 @@ function moveEverything() {
 }
 
 function drawEverything() {
-    colorRect(0, 0, canvas.width, canvas.height, "black");
-    colorRect(0, paddle1Y, 10, PADDLE_HEIGHT, "white");
-    colorCircle(ballX, ballY, 10, "white");
+    colorRect(0, 0, canvas.width, canvas.height, CANVAS_COLOR);
+    colorRect(0, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_COLOR);
+    colorRect(canvas.width - PADDLE_WIDTH, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_COLOR);
+    colorCircle(ballX, ballY, 10, BALL_COLOR);
+
+    canvasContext.fillStyle = "white";
+    canvasContext.font = "16px Arial";
+    canvasContext.fillText(`${player1Score} - ${player2Score}`, (canvas.width / 2) - 15, 15);
 }
 
 function colorRect(x, y, w, h, color) {
