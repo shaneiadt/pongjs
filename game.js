@@ -56,11 +56,7 @@ window.onload = function () {
 }
 
 function ballReset() {
-    if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE) {
-        player1Score = 0;
-        player2Score = 0;
-        showingWinScreen = true;
-    }
+    if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE) showingWinScreen = true;
     ballSpeedX = ballSpeedX * -1;
     ballX = canvas.width / 2;
     ballY = canvas.height / 2;
@@ -110,14 +106,29 @@ function moveEverything() {
     }
 }
 
+function drawNet() {
+    for (var i = 10; i < canvas.height; i += 40) {
+        colorRect((canvas.width / 2), i, 2, 20, "white");
+    }
+}
+
 function drawEverything() {
     colorRect(0, 0, canvas.width, canvas.height, CANVAS_COLOR);
     if (showingWinScreen) {
         canvasContext.fillStyle = "white";
         canvasContext.font = "20px Arial";
+        let msg = '';
+        if (player1Score >= WINNING_SCORE) {
+            msg = "You are the winner!";
+            canvasContext.fillText(msg, (canvas.width / 2) - 75, (canvas.height / 2) - 50);
+        } else if (player2Score >= WINNING_SCORE) {
+            msg = "CPU victory, be better next time!";
+            canvasContext.fillText(msg, (canvas.width / 2) - 125, (canvas.height / 2) - 50);
+        }
         canvasContext.fillText(`Click to continue`, (canvas.width / 2) - 60, (canvas.height / 2));
         return;
     }
+    drawNet();
     colorRect(0, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_COLOR);
     colorRect(canvas.width - PADDLE_WIDTH, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_COLOR);
     colorCircle(ballX, ballY, 10, BALL_COLOR);
